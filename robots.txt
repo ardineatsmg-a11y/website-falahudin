@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Clean-param: q
+Sitemap: https://website-falahudin.vercel.app/sitemap.xml
