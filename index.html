@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kantor Hukum Falahudin</title>
+
+  <!-- TAILWINDCSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- GOOGLE FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --gold:#FFD43B;
+      --law-blue:#1E40AF;
+      --transition-fast: 200ms;
+    }
+
+    /* Base fonts */
+    body { font-family: 'Lato', sans-serif; transition: background-color 250ms ease, color 250ms ease; }
+    .brand-font { font-family: 'Playfair Display', serif; }
+
+    /* HERO background + parallax */
+    .hero-bg {
+      background: linear-gradient(rgba(5,5,5,0.5), rgba(5,5,5,0.5)), url('law-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 85vh;
+      transition: background-position 0.1s linear;
+    }
+
+    /* Scroll reveal animation */
+    .scroll-anim { opacity: 0; transform: translateY(28px); transition: all 850ms cubic-bezier(.2,.9,.2,1); }
+    .scroll-anim.show { opacity: 1; transform: translateY(0); }
+
+    /* Icon animation: floating + glow (choice E) */
+    .icon-anim { display:inline-block; will-change: transform, filter; transition: transform 400ms ease; }
+    .icon-anim .icon-wrap {
+      animation: floaty 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 0px rgba(255,212,59,0.0));
+      transition: filter 300ms ease;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .icon-anim:hover .icon-wrap { transform: translateY(-6px); filter: drop-shadow(0 6px 18px rgba(255,212,59,0.18)); }
+    @keyframes floaty {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+
+    /* glowing pulse behind icon */
+    .glow {
+      position: relative;
+    }
+    .glow::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 12px;
+      z-index: -1;
+      opacity: 0.0;
+      transition: opacity 300ms ease, transform 300ms ease;
+      transform: scale(0.95);
+      background: radial-gradient(circle at center, rgba(255,212,59,0.18), rgba(255,212,59,0.02) 40%);
+    }
+    .icon-anim:hover .glow::after { opacity: 1; transform: scale(1.06); }
+
+    /* Navbar shadow transition */
+    nav { transition: background-color 220ms ease, box-shadow 220ms ease; }
+
+    /* Floating WhatsApp button */
+    .whatsapp-fab{
+      position: fixed; right: 20px; bottom: 22px; z-index: 60;
+      width: 60px; height: 60px; border-radius: 9999px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .whatsapp-fab:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.32); }
+
+    /* Typing effect in hero */
+    .typing {
+      display:inline-block; border-right: 2px solid rgba(255,255,255,0.85);
+      padding-right:6px; white-space:nowrap; overflow:hidden;
+      animation: blink-caret 800ms steps(1) infinite;
+    }
+    @keyframes blink-caret { 50% { border-color: transparent; } }
+
+    /* Scroll progress bar */
+    #progress {
+      position: fixed; top:0; left:0; height:4px; width:0%;
+      z-index: 80; transition: width 120ms linear, background-color 200ms ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+
+    /* Dark mode (choice A: black + gold) */
+    .dark-mode {
+      background-color: #060606 !important;
+      color: #e6e6e6 !important;
+    }
+    .dark-mode nav { background: rgba(6,6,6,0.92) !important; }
+    .dark-mode .brand-font { color: var(--gold) !important; }
+    .dark-mode .card { background: rgba(20,20,20,0.6); border-color: rgba(255,212,59,0.06); }
+    .dark-mode .footer { background: #000000; color: #bdbdbd; }
+    .dark-mode .contact-card { background: rgba(255,255,255,0.03); }
+
+    /* small helper */
+    .gold-text { color: var(--gold); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 transition-all duration-200">
+
+  <!-- Scroll progress -->
+  <div id="progress" aria-hidden="true"></div>
+
+  <!-- NAVBAR -->
+  <nav class="bg-slate-900 text-gray-200 py-4 fixed w-full z-50">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+      <div class="text-2xl font-bold brand-font gold-text">
+        KANTOR HUKUM FALAHUDIN
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- Dark mode toggle -->
+        <button id="darkToggle" class="p-2 rounded-md border border-transparent hover:border-yellow-400" aria-label="Toggle dark mode" title="Toggle Dark Mode">
+          <svg id="darkIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-8.66h-1M4.34 12H3m15-6.66-.7.7M6.36 17.64l-.7.7M17.64 17.64l.7.7M6.36 6.36l-.7-.7M12 5a7 7 0 100 14 7 7 0 000-14z"/>
+          </svg>
+        </button>
+
+        <div class="hidden md:flex space-x-8 font-semibold">
+          <a href="#home" class="hover:text-yellow-400 transition">Beranda</a>
+          <a href="#about" class="hover:text-yellow-400 transition">Tentang Kami</a>
+          <a href="#services" class="hover:text-yellow-400 transition">Layanan</a>
+          <a href="#why" class="hover:text-yellow-400 transition">Keunggulan</a>
+          <a href="#contact" class="hover:text-yellow-400 transition">Hubungi Kami</a>
+        </div>
+
+        <!-- Mobile menu button -->
+        <button id="mobileBtn" class="md:hidden p-2 rounded-md" aria-label="Open menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile nav -->
+    <div id="mobileNav" class="hidden md:hidden bg-slate-900/95">
+      <div class="px-6 py-4 flex flex-col space-y-3">
+        <a href="#home" class="hover:text-yellow-400">Beranda</a>
+        <a href="#about" class="hover:text-yellow-400">Tentang Kami</a>
+        <a href="#services" class="hover:text-yellow-400">Layanan</a>
+        <a href="#why" class="hover:text-yellow-400">Keunggulan</a>
+        <a href="#contact" class="hover:text-yellow-400">Hubungi Kami</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="home" class="hero-bg flex flex-col justify-center items-center text-center text-white px-6 pt-24 scroll-anim" aria-label="Hero">
+    <h1 class="text-4xl md:text-6xl font-bold brand-font mb-6 leading-tight">
+      Membela Hak Anda Dengan <span class="gold-text">Integritas</span> &amp; Profesionalisme
+    </h1>
+
+    <p class="text-lg md:text-xl text-gray-200 max-w-2xl mb-6">
+      <span class="typing" id="typingLine" aria-hidden="false"></span>
+    </p>
+
+    <div class="flex gap-4 items-center justify-center">
+      <a href="https://wa.me/6285781466708" target="_blank"
+         class="bg-yellow-500 text-slate-900 font-bold py-3 px-6 rounded-lg text-lg hover:bg-yellow-600 transition shadow">
+        Konsultasi Gratis Sekarang
+      </a>
+
+      <!-- small icons with animations -->
+      <div class="flex items-center gap-3 ml-2">
+        <div class="icon-anim" title="Fast Response">
+          <div class="icon-wrap glow bg-white/5 rounded-lg p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.24 8.24a9 9 0 11-12.73 0"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="icon-anim" title="Confidential">
+          <div class="icon-wrap glow bg-white/5 rounded-lg p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c1.657 0 3-1.567 3-3.5S13.657 4 12 4 9 5.567 9 7.5 10.343 11 12 11z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.5 20a6.5 6.5 0 0113 0"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="py-20 scroll-anim" aria-labelledby="about-heading">
+    <div class="container mx-auto px-6 flex flex-col md:flex-row items-center">
+      <div class="md:w-1/2 mb-8 md:mb-0">
+        <img src="falahudin.jpeg" alt="Foto Falahudin" class="rounded-lg shadow-2xl border-4 border-yellow-500 w-full object-cover">
+      </div>
+
+      <div class="md:w-1/2 md:pl-12">
+        <h2 id="about-heading" class="text-3xl font-bold mb-4 text-slate-900">Tentang Kantor Hukum Falahudin</h2>
+        <div class="w-20 h-1 bg-yellow-500 mb-6"></div>
+        <p class="text-gray-700 leading-relaxed mb-4">
+          Kantor Hukum Falahudin didirikan oleh <strong>Falahudin, S.H.</strong>, seorang advokat yang berkomitmen memberikan layanan hukum yang berlandaskan
+          <strong>integritas, keahlian, dan dedikasi personal</strong>.
+        </p>
+        <p class="text-gray-700 leading-relaxed mb-4">
+          Kami memahami bahwa menghadapi masalah hukum dapat menjadi pengalaman yang menekan. Oleh karena itu, kami hadir untuk mendampingi Anda secara profesional dan strategis.
+        </p>
+
+        <h3 class="text-xl font-bold mb-3 text-slate-900 mt-6">Komitmen Kami</h3>
+        <ul class="list-disc list-inside text-gray-700 space-y-2">
+          <li>Kepemimpinan langsung oleh Advokat Falahudin, S.H.</li>
+          <li>Transparansi proses dan biaya.</li>
+          <li>Pendekatan hukum yang holistik, strategis, dan berbasis bukti.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="py-20 bg-slate-100 scroll-anim" aria-labelledby="services-heading">
+    <div class="container mx-auto px-6 text-center">
+      <h2 id="services-heading" class="text-4xl font-bold mb-4 text-slate-900">Area Praktik Kami</h2>
+      <div class="w-20 h-1 bg-yellow-500 mx-auto mb-12"></div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition border-t-4 border-yellow-500 text-left card">
+          <h3 class="text-2xl font-bold mb-4 text-slate-900">Litigasi & Non-Litigasi</h3>
+          <p class="text-gray-700 mb-4">Pendampingan hukum profesional untuk seluruh tingkat peradilan.</p>
+          <ul class="list-disc list-inside text-gray-700 ml-4 space-y-2">
+            <li><strong>Hukum Pidana:</strong> Pembelaan kasus umum & khusus.</li>
+            <li><strong>Hukum Perdata:</strong> Sengketa properti, wanprestasi, dan PMH.</li>
+            <li><strong>Perdata Agama:</strong> Waris, perceraian, dan harta bersama.</li>
+            <li><strong>PTUN:</strong> Gugatan terhadap keputusan pejabat TUN.</li>
+          </ul>
+        </div>
+
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition border-t-4 border-slate-900 text-left card">
+          <h3 class="text-2xl font-bold mb-4 text-slate-900">Layanan Hukum Korporasi</h3>
+          <p class="text-gray-700 mb-4">Layanan hukum strategis untuk menunjang operasional perusahaan.</p>
+          <ul class="list-disc list-inside text-gray-700 ml-4 space-y-2">
+            <li><strong>Legal Opinion:</strong> Konsultasi & analisis hukum.</li>
+            <li><strong>Manajemen Konflik:</strong> Sengketa bisnis & negosiasi.</li>
+            <li><strong>Compliance:</strong> Kepatuhan hukum perusahaan.</li>
+            <li><strong>Pendampingan:</strong> Pemeriksaan hukum & permasalahan internal.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE US -->
+  <section id="why" class="py-20 bg-white scroll-anim" aria-labelledby="why-heading">
+    <div class="container mx-auto px-6 text-center">
+      <h2 id="why-heading" class="text-4xl font-bold mb-4 text-slate-900">Mengapa Memilih Kami?</h2>
+      <div class="w-20 h-1 bg-yellow-500 mx-auto mb-12"></div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="p-6 bg-slate-100 rounded-xl shadow-lg hover:shadow-2xl transition">
+          <h4 class="text-xl font-bold mb-3 text-slate-900">Integritas Tinggi</h4>
+          <p class="text-gray-700">Setiap langkah hukum dilakukan dengan kejujuran, tanggung jawab, dan profesionalisme.</p>
+        </div>
+
+        <div class="p-6 bg-slate-100 rounded-xl shadow-lg hover:shadow-2xl transition">
+          <h4 class="text-xl font-bold mb-3 text-slate-900">Pendampingan Personal</h4>
+          <p class="text-gray-700">Klien ditangani langsung oleh advokat utama untuk hasil terbaik.</p>
+        </div>
+
+        <div class="p-6 bg-slate-100 rounded-xl shadow-lg hover:shadow-2xl transition">
+          <h4 class="text-xl font-bold mb-3 text-slate-900">Strategi Tepat Sasaran</h4>
+          <p class="text-gray-700">Setiap kasus dianalisis mendalam dan ditangani secara strategis.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="py-20 bg-slate-900 text-gray-100 scroll-anim" aria-labelledby="contact-heading">
+    <div class="container mx-auto px-6 text-center">
+      <h2 id="contact-heading" class="text-3xl font-bold mb-4 text-black">Butuh Bantuan Hukum?</h2>
+      <p class="mb-8 text-black">Hubungi kami untuk konsultasi awal tanpa biaya.</p>
+
+      <div class="flex flex-col md:flex-row justify-center gap-8 mb-8">
+        <div class="contact-card p-6 rounded-lg w-full md:w-1/3 border border-yellow-500 shadow-xl">
+          <h4 class="font-bold text-yellow-400 mb-2 text-lg">Alamat Kantor</h4>
+          <p class="text-black">Jl. Alam Permai VIII Blok B1 No. H 34<br>Kel. Medang, Kec. Pagedangan<br>Kab. Tangerang, Banten</p>
+        </div>
+
+        <div class="contact-card p-6 rounded-lg w-full md:w-1/3 border border-yellow-500 shadow-xl">
+          <h4 class="font-bold text-yellow-400 mb-2 text-lg">Kontak</h4>
+          <p class="text-black">Email: <span class="text-black">falahudinadvokat86@gmail.com</span><br>WhatsApp: <span class="text-black">+62 857-8146-6708</span></p>
+        </div>
+      </div>
+
+      <a href="https://wa.me/6285781466708" target="_blank"
+         class="bg-yellow-500 text-slate-900 font-bold py-3 px-8 rounded-lg text-lg hover:bg-yellow-600 transition shadow-lg">
+         Hubungi Kami Sekarang
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-black py-6 text-center text-gray-400 text-sm footer">
+    <p>&copy; 2024 Kantor Hukum Falahudin. All Rights Reserved.</p>
+  </footer>
+
+  <!-- FLOATING WHATSAPP BUTTON -->
+  <a href="https://wa.me/6285781466708" target="_blank" class="whatsapp-fab bg-green-500" aria-label="Chat on WhatsApp" title="Hubungi via WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.52 3.48A11.86 11.86 0 0 0 12 .5C6.27.5 1.5 5.27 1.5 11c0 1.94.5 3.78 1.44 5.43L.5 23.5l7.57-2.03A11.5 11.5 0 0 0 12 22.5c5.73 0 10.5-4.77 10.5-10.5 0-2.82-1.12-5.4-3.98-8.52zM12 20c-.9 0-1.77-.14-2.6-.4L6 18l-.74-.24A8.97 8.97 0 0 1 3 11c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9z"></path>
+      <path d="M17.5 14.1l-1.2-.35c-.16-.05-.34 0-.45.12l-.3.32c-.2.21-.5.34-.81.34-1.78 0-3.35-1.57-3.35-3.5 0-.31.12-.61.33-.83l.32-.31c.12-.12.17-.3.12-.46l-.37-1.19c-.08-.28-.36-.46-.65-.43-1.78.23-3.12 1.82-3.12 3.47 0 3.07 2.59 6.12 5.88 6.12.28 0 .54-.09.76-.26l.56-.4c.2-.14.44-.21.69-.21.97 0 1.88-.56 2.33-1.44.18-.36 0-.78-.36-.94z"></path>
+    </svg>
+  </a>
+
+  <!-- SCRIPTS -->
+  <script>
+    /* --- Helpers --- */
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    /* Smooth scroll for anchor links */
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function(e){
+        const target = document.querySelector(this.getAttribute('href'));
+        if(target) {
+          e.preventDefault();
+          const yOffset = -72; // offset for fixed navbar
+          const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      });
+    });
+
+    /* Mobile nav toggle */
+    $('#mobileBtn').addEventListener('click', () => {
+      const m = $('#mobileNav');
+      m.classList.toggle('hidden');
+    });
+
+    /* Scroll reveal using IntersectionObserver */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('show');
+      });
+    }, { threshold: 0.18 });
+
+    document.querySelectorAll('.scroll-anim').forEach(el => observer.observe(el));
+
+    /* Parallax hero */
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const hero = document.querySelector('.hero-bg');
+      if(hero) hero.style.backgroundPositionY = -(scrolled * 0.18) + 'px';
+    }, { passive: true });
+
+    /* Navbar shadow on scroll */
+    const navbar = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 10) {
+        navbar.classList.add('shadow-xl', 'bg-slate-900/90', 'backdrop-blur');
+      } else {
+        navbar.classList.remove('shadow-xl', 'bg-slate-900/90', 'backdrop-blur');
+      }
+    }, { passive: true });
+
+    /* Typing effect (hero) - rotates through phrases */
+    (function(){
+      const lines = [
+        "Pendampingan hukum tegas dan strategis.",
+        "Konsultasi awal tanpa biaya.",
+        "Pendekatan personal untuk setiap klien."
+      ];
+      const el = document.getElementById('typingLine');
+      let i = 0, char = 0, forward = true, idx = 0;
+      function tick(){
+        if(!el) return;
+        const current = lines[idx];
+        if(forward){
+          el.textContent = current.slice(0, char + 1);
+          char++;
+          if(char >= current.length){ forward = false; setTimeout(tick, 1500); return; }
+        } else {
+          el.textContent = current.slice(0, char - 1);
+          char--;
+          if(char <= 0){ forward = true; idx = (idx+1)%lines.length; }
+        }
+        setTimeout(tick, forward ? 60 : 28);
+      }
+      tick();
+    })();
+
+    /* Scroll progress bar (color auto-switch depending on dark mode) */
+    const progress = document.getElementById('progress');
+    function updateProgress(){
+      const h = document.documentElement;
+      const percent = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+      progress.style.width = Math.min(Math.max(percent,0),100) + '%';
+      // set color depending on mode
+      if(document.body.classList.contains('dark-mode')){
+        progress.style.backgroundColor = 'var(--gold)';
+      } else {
+        progress.style.backgroundColor = 'var(--law-blue)';
+      }
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
+
+    /* Dark mode toggle (persist to localStorage) - choice A: black+gold */
+    const darkToggle = document.getElementById('darkToggle');
+    const DARK_KEY = 'falahudin_dark_mode_v1';
+
+    function applyDark(isDark){
+      if(isDark){
+        document.body.classList.add('dark-mode');
+        // header brand recolor
+        document.querySelectorAll('.gold-text').forEach(n => n.classList.add('gold-text'));
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+      updateProgress();
+    }
+
+    // initialize
+    const saved = localStorage.getItem(DARK_KEY);
+    const prefers = saved !== null ? (saved === '1') : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    applyDark(prefers);
+
+    darkToggle.addEventListener('click', () => {
+      const isDark = !document.body.classList.contains('dark-mode');
+      applyDark(isDark);
+      localStorage.setItem(DARK_KEY, isDark ? '1' : '0');
+    });
+
+    /* Ensure progress bar color toggles immediately on mode change */
+    const mo = new MutationObserver(updateProgress);
+    mo.observe(document.body, { attributes: true, attributeFilter:['class'] });
+
+    /* Small accessibility: focus outlines on keyboard nav */
+    document.body.addEventListener('keydown', (e) => {
+      if(e.key === 'Tab') document.documentElement.classList.add('user-is-tabbing');
+    });
+
+    /* small: ensure observer shows hero immediately if in viewport */
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.scroll-anim').forEach(el => {
+        if(el.getBoundingClientRect().top < window.innerHeight * 0.9) el.classList.add('show');
+      });
+      updateProgress();
+    });
+  </script>
+</body>
+</html>
